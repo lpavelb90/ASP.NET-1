@@ -2,8 +2,8 @@
 
 namespace PromoCodeFactory.Core.Domain
 {
-    public class BaseEntity
+    public class BaseEntity<T> where T : struct, IEquatable<T>
     {
-        public Guid Id { get; set; }
+        public T Id { get; set; }
     }
 }

@@ -7,9 +7,8 @@ using PromoCodeFactory.Core.Domain;
 
 namespace PromoCodeFactory.DataAccess.Repositories
 {
-    public class InMemoryRepository<T>
-        : IRepository<T>
-        where T : BaseEntity
+    public class InMemoryRepository<T, K>
+        : IRepository<T, K> where T : BaseEntity<K> where K : struct, IEquatable<K>
     {
         protected IEnumerable<T> Data { get; set; }
 
@@ -18,14 +17,31 @@ namespace PromoCodeFactory.DataAccess.Repositories
             Data = data;
         }
 
+        public IQueryable<T> GetAll() => Data.AsQueryable();
+
         public Task<IEnumerable<T>> GetAllAsync()
         {
             return Task.FromResult(Data);
         }
 
-        public Task<T> GetByIdAsync(Guid id)
+        public Task<T> GetByIdAsync(K id)
         {
-            return Task.FromResult(Data.FirstOrDefault(x => x.Id == id));
+            return Task.FromResult(Data.FirstOrDefault(x => x.Id.Equals(id)));
+        }
+
+        public Task DeleteAsync(K id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<K> CreateAsync(T entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateAsync(T entity)
+        {
+            throw new NotImplementedException();
         }
     }
 }
