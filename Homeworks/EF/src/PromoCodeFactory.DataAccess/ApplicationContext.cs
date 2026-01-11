@@ -57,6 +57,11 @@ namespace PromoCodeFactory.DataAccess
 
             Database.EnsureCreated();
 
+            SeedData<T>(data);
+        }
+
+        public void SeedData<T>(IEnumerable<BaseEntity<Guid>> data) where T : BaseEntity<Guid>
+        {
             var dbSet = Set<T>();
 
             if (!dbSet.Any()) // добавляем если в таблице нет данных
