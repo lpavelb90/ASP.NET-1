@@ -33,6 +33,12 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+        
+    - name: Install dotnet-ef
+      run: dotnet tool install --global dotnet-ef
+      
+    - name: Add dotnet tools to PATH
+      run: echo "${HOME}/.dotnet/tools" >> $GITHUB_PATH
 
     - name: Restore dependencies
       run: dotnet restore ./Homeworks/EF/src/PromoCodeFactory.sln
@@ -43,5 +49,5 @@ jobs:
     - name: Run migrations
       run: |
         dotnet ef database update \
-          --project ./Homeworks/EF/src/PromoCodeFactory.DataAccess \
-          --startup-project ./Homeworks/EF/src/PromoCodeFactory.WebHost
+          --project "./Homeworks/EF/src/PromoCodeFactory.DataAccess/PromoCodeFactory.DataAccess.csproj" \
+          --startup-project "./Homeworks/EF/src/PromoCodeFactory.WebHost/PromoCodeFactory.WebHost.csproj"
