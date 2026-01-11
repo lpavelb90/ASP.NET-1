@@ -33,12 +33,15 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+        
+    - name: Debug folders
+      run: ls -R
 
     - name: Restore dependencies
-      run: dotnet restore ./PromoCodeFactory.WebHost
+      run: dotnet restore PromoCodeFactory.sln
 
     - name: Build
-      run: dotnet build ./PromoCodeFactory.WebHost --no-restore --configuration Release
+      run: dotnet build ./src/PromoCodeFactory.WebHost/PromoCodeFactory.WebHost.csproj --no-restore --configuration Release
 
     - name: Run migrations
       run: |
