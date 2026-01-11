@@ -33,9 +33,6 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-        
-    - name: Debug folders
-      run: ls -R
 
     - name: Restore dependencies
       run: dotnet restore ./Homeworks/EF/src/PromoCodeFactory.sln
@@ -46,5 +43,5 @@ jobs:
     - name: Run migrations
       run: |
         dotnet ef database update \
-          --project ./PromoCodeFactory.DataAccess \
-          --startup-project ./PromoCodeFactory.WebHost
+          --project ./Homeworks/EF/src/PromoCodeFactory.DataAccess \
+          --startup-project ./Homeworks/EF/src/PromoCodeFactory.WebHost
