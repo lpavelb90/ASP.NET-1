@@ -38,6 +38,7 @@ namespace Pcf.ReceivingFromPartner.WebHost
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
             services.AddScoped<INotificationGateway, NotificationGateway>();
             services.AddScoped<IDbInitializer, EfDbInitializer>();
+            services.AddScoped<IPreferenceRepository, PreferenceRepository>();
 
             services.AddHttpClient<IGivingPromoCodeToCustomerGateway,GivingPromoCodeToCustomerGateway>(c =>
             {
@@ -61,6 +62,12 @@ namespace Pcf.ReceivingFromPartner.WebHost
             {
                 options.Title = "PromoCode Factory Receiving From Partner API Doc";
                 options.Version = "1.0";
+            });
+
+            services.AddStackExchangeRedisCache(opts =>
+            {
+                opts.Configuration = "localhost:6379,abortConnect=false,defaultDatabase=5,password=mypassword";
+                opts.InstanceName = "redis";
             });
         }
 

@@ -20,13 +20,13 @@ using Microsoft.AspNetCore.Mvc;
         : ControllerBase
     {
         private readonly IRepository<Partner> _partnersRepository;
-        private readonly IRepository<Preference> _preferencesRepository;
+        private readonly IPreferenceRepository _preferencesRepository;
         private readonly INotificationGateway _notificationGateway;
         private readonly IGivingPromoCodeToCustomerGateway _givingPromoCodeToCustomerGateway;
         private readonly IAdministrationGateway _administrationGateway;
 
         public PartnersController(IRepository<Partner> partnersRepository,
-            IRepository<Preference> preferencesRepository, 
+            IPreferenceRepository preferencesRepository, 
             INotificationGateway notificationGateway,
             IGivingPromoCodeToCustomerGateway givingPromoCodeToCustomerGateway,
             IAdministrationGateway administrationGateway)
