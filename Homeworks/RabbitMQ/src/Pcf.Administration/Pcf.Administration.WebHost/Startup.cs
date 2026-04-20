@@ -1,15 +1,19 @@
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
-using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
-using Pcf.Administration.DataAccess;
-using Pcf.Administration.DataAccess.Repositories;
-using Pcf.Administration.DataAccess.Data;
 using Pcf.Administration.Core.Abstractions.Repositories;
+using Pcf.Administration.Core.Services;
+using Pcf.Administration.DataAccess;
+using Pcf.Administration.DataAccess.Data;
+using Pcf.Administration.DataAccess.Repositories;
+using Pcf.Administration.WebHost.Consumers;
+using Pcf.Integration.Messages;
 using System;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace Pcf.Administration.WebHost
 {
@@ -30,6 +34,7 @@ namespace Pcf.Administration.WebHost
                 x.SuppressAsyncSuffixInActionNames = false);
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
             services.AddScoped<IDbInitializer, EfDbInitializer>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddDbContext<DataContext>(x =>
             {
                 //x.UseSqlite("Filename=PromocodeFactoryAdministrationDb.sqlite");
@@ -44,6 +49,21 @@ namespace Pcf.Administration.WebHost
             {
                 options.Title = "PromoCode Factory Administration API Doc";
                 options.Version = "1.0";
+            });
+
+            services.AddMassTransit(x =>
+            {
+                x.AddConsumer<PromoCodeFromPartnerConsumer>();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("localhost", "/");
+
+                    // Auto-configure endpoints for registered consumers
+                    cfg.ConfigureEndpoints(context);
+
+                    cfg.Message<PromoCodeFromPartnerIssuedMessage>(m => m.SetEntityName("Pcf.Integration.Messages:PromoCodeFromPartnerIssuedMessage"));
+                });
             });
         }
 

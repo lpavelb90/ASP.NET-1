@@ -12,6 +12,8 @@ using Pcf.ReceivingFromPartner.DataAccess;
 using Pcf.ReceivingFromPartner.DataAccess.Repositories;
 using Pcf.ReceivingFromPartner.DataAccess.Data;
 using Pcf.ReceivingFromPartner.Integration;
+using MassTransit;
+using Pcf.Integration.Messages;
 
 namespace Pcf.ReceivingFromPartner.WebHost
 {
@@ -33,15 +35,26 @@ namespace Pcf.ReceivingFromPartner.WebHost
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
             services.AddScoped<INotificationGateway, NotificationGateway>();
             services.AddScoped<IDbInitializer, EfDbInitializer>();
+            services.AddTransient<IAdministrationGateway, AdministrationGateway>();
 
             services.AddHttpClient<IGivingPromoCodeToCustomerGateway, GivingPromoCodeToCustomerGateway>(c =>
             {
                 c.BaseAddress = new Uri(Configuration["IntegrationSettings:GivingToCustomerApiUrl"]);
             });
 
-            services.AddHttpClient<IAdministrationGateway, AdministrationGateway>(c =>
+            //services.AddHttpClient<IAdministrationGateway, AdministrationGateway>(c =>
+            //{
+            //    c.BaseAddress = new Uri(Configuration["IntegrationSettings:AdministrationApiUrl"]);
+            //});
+
+            services.AddMassTransit(x =>
             {
-                c.BaseAddress = new Uri(Configuration["IntegrationSettings:AdministrationApiUrl"]);
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("localhost", "/");
+
+                    cfg.Message<PromoCodeFromPartnerIssuedMessage>(m => m.SetEntityName("Pcf.Integration.Messages:PromoCodeFromPartnerIssuedMessage"));
+                });
             });
 
             services.AddDbContext<DataContext>(x =>
