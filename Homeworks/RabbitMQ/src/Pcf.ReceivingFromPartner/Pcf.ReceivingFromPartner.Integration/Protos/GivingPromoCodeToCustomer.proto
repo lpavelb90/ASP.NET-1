@@ -1,0 +1,22 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Pcf.ReceivingFromPartner.Integration.Protos";
+
+import "google/protobuf/empty.proto";
+
+package GivingPromoCodeToCustomer;
+
+service GivingPromoCodeToCustomer {
+	rpc GivePromoCodeToCustomer (GivePromoCodeToCustomerRequest) returns (google.protobuf.Empty);
+}
+
+message GivePromoCodeToCustomerRequest {
+	string ServiceInfo = 1;
+	string PartnerId = 2;
+    string PromoCodeId = 3;
+    string PromoCode = 4;
+    string PreferenceId = 5;
+    string BeginDate = 6;
+    string EndDate = 7;
+    string PartnerManagerId = 8;
+}

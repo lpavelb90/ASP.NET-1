@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -9,8 +9,15 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Google.Protobuf" Version="3.35.1" />
+      <PackageReference Include="Grpc.Net.Client" Version="2.80.0" />
+      <PackageReference Include="Grpc.Tools" Version="2.81.1">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
       <PackageReference Include="MassTransit" Version="9.1.0" />
       <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
+      <Protobuf Include="Protos\GivingPromoCodeToCustomer.proto" GrpcServices="Client" />
     </ItemGroup>
 
 </Project>

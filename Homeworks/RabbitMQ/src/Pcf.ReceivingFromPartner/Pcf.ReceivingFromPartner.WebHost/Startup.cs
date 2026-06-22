@@ -1,19 +1,21 @@
-using System;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
-using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
-using Pcf.ReceivingFromPartner.Core.Abstractions.Repositories;
-using Pcf.ReceivingFromPartner.Core.Abstractions.Gateways;
-using Pcf.ReceivingFromPartner.DataAccess;
-using Pcf.ReceivingFromPartner.DataAccess.Repositories;
-using Pcf.ReceivingFromPartner.DataAccess.Data;
-using Pcf.ReceivingFromPartner.Integration;
-using MassTransit;
 using Pcf.Integration.Messages;
+using Pcf.ReceivingFromPartner.Core.Abstractions.Gateways;
+using Pcf.ReceivingFromPartner.Core.Abstractions.Repositories;
+using Pcf.ReceivingFromPartner.DataAccess;
+using Pcf.ReceivingFromPartner.DataAccess.Data;
+using Pcf.ReceivingFromPartner.DataAccess.Repositories;
+using Pcf.ReceivingFromPartner.Integration;
+using Pcf.ReceivingFromPartner.Integration.Protos;
+using System;
+using System.Net.Http;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace Pcf.ReceivingFromPartner.WebHost
 {
@@ -36,10 +38,15 @@ namespace Pcf.ReceivingFromPartner.WebHost
             services.AddScoped<INotificationGateway, NotificationGateway>();
             services.AddScoped<IDbInitializer, EfDbInitializer>();
             services.AddTransient<IAdministrationGateway, AdministrationGateway>();
+            services.AddTransient<IGivingPromoCodeToCustomerGateway, GivingPromoCodeToCustomerGateway>();
 
-            services.AddHttpClient<IGivingPromoCodeToCustomerGateway, GivingPromoCodeToCustomerGateway>(c =>
+            services.AddGrpcClient<GivingPromoCodeToCustomer.GivingPromoCodeToCustomerClient>(opt =>
             {
-                c.BaseAddress = new Uri(Configuration["IntegrationSettings:GivingToCustomerApiUrl"]);
+                opt.Address = new Uri(Configuration["IntegrationSettings:GivingToCustomerApiUrl"]);
+            })
+            .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+            {
+                EnableMultipleHttp2Connections = true
             });
 
             //services.AddHttpClient<IAdministrationGateway, AdministrationGateway>(c =>
